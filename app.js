@@ -1,11 +1,18 @@
-// npm is a global command
-// local dependency installation npm -i <package name>
-// global dependency installation npm install -g <package naem>
-// package.json is manifest file which stores important files about our project or package
+var http = require("http");
+var fs = require("fs");
 
-// loadash is a external package which we need to install first
-const _ = require("loadash");
+http
+  .createServer(function (req, res) {
+    // const text = fs.readFileSync("./content/big.txt", "utf-8");
+    // res.end(text);
+    const fileStream = fs.createReadStream("./content/big.txt", "utf-8");
+    fileStream.on("open", () => {
+      // insteading of sending file at once, we are sending big file in chunks
+      fileStream.pipe(res);
+    });
 
-const items = [1, [2, [3, [4]]]];
-const newItems = _.flattenDeep(items);
-console.log(newItems);
+    fileStream.on("error", (err) => {
+      res.end(err);
+    });
+  })
+  .listen(5000);
